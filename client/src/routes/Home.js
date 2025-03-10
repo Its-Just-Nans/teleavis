@@ -7,7 +7,6 @@ import {
   AccordionPanel,
   Badge,
   Box,
-  Container,
   Heading,
   List,
   ListItem,
@@ -31,6 +30,7 @@ import {
 } from '../components/ratings';
 import { computeRating, isEmpty, parseDate } from '../utils';
 import { useUser } from '../providers/UserProvider';
+import SectionContainer from '../components/SectionContainer';
 
 const Reviews = ({ data }) => {
   const bgColor = useColorModeValue('gray.100', 'gray.900');
@@ -47,8 +47,7 @@ const Reviews = ({ data }) => {
   return (
     <List spacing={{ base: 3, md: 3 }}>
       {reviews.map((review, index) => {
-        const createdOn = new Date(review.createdOn);
-        const date = parseDate(createdOn);
+        const date = parseDate(review.createdOn);
 
         return (
           <ListItem
@@ -89,6 +88,9 @@ const SubjectItemDetails = ({
 }) => {
   const user = useUser();
   const isLoggedIn = !isEmpty(user);
+  const queryParameters = new URLSearchParams(window.location.search);
+  const promoCode = queryParameters.get('promotional_code');
+  const showReviews = isLoggedIn || promoCode === 'tp2024';
 
   return (
     <Stack spacing={{ base: 5, md: 5 }} width="full">
@@ -123,7 +125,7 @@ const SubjectItemDetails = ({
           fontWeight={700}
         />
       </SimpleGrid>
-      {isLoggedIn ? <Reviews data={reviews} /> : null}
+      {showReviews ? <Reviews data={reviews} /> : null}
     </Stack>
   );
 };
@@ -251,7 +253,7 @@ export default function Home() {
   );
 
   return (
-    <Container maxW={'5xl'}>
+    <SectionContainer>
       <Stack
         textAlign={'center'}
         align={'center'}
@@ -302,6 +304,6 @@ export default function Home() {
           {selectedTrackId && <SubjectsList trackId={selectedTrackId} />}
         </Stack>
       </Stack>
-    </Container>
+    </SectionContainer>
   );
 }
